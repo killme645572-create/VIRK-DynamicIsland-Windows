@@ -30,7 +30,7 @@ namespace Island
     static class Updater
     {
         // Впиши сюда свой репозиторий «владелец/репозиторий» — или задай UpdateRepo в settings.json
-        public const string DefaultRepo = "OWNER/Island";
+        public const string DefaultRepo = "killme645572-create/VIRK-DynamicIsland-Windows";
 
         static readonly HttpClient Http = MakeHttp();
 
