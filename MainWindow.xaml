@@ -1,0 +1,342 @@
+<Window x:Class="Island.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Island"
+        Title="Island" Width="560" Height="420"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ShowActivated="False" ResizeMode="NoResize">
+    <Window.Resources>
+        <Style x:Key="Chip" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="#26FFFFFF"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="B" Background="{TemplateBinding Background}" CornerRadius="14" Padding="12,6">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="B" Property="Background" Value="#40FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+    <Path x:Name="Skirt" Fill="Black" HorizontalAlignment="Center" VerticalAlignment="Top" IsHitTestVisible="False"/>
+    <Border x:Name="Pill" Background="Black" Width="170" Height="34"
+            HorizontalAlignment="Center" VerticalAlignment="Top" ClipToBounds="True"
+            MouseEnter="Pill_MouseEnter" MouseLeave="Pill_MouseLeave">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Выход" Click="Exit_Click"/>
+            </ContextMenu>
+        </Border.ContextMenu>
+        <Grid>
+            <Grid x:Name="Glow" Opacity="0" Visibility="Collapsed" IsHitTestVisible="False">
+                <Border x:Name="Blob1" CornerRadius="{Binding CornerRadius, ElementName=Pill}"/>
+                <Border x:Name="Blob2" CornerRadius="{Binding CornerRadius, ElementName=Pill}"/>
+                <Border x:Name="Blob3" CornerRadius="{Binding CornerRadius, ElementName=Pill}"/>
+            </Grid>
+
+            <TextBlock x:Name="ToastText" Foreground="White" FontSize="14" Opacity="0"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" Margin="16,0"/>
+
+            <Grid x:Name="OpenPanel" Opacity="0" IsHitTestVisible="False" Margin="18,12,18,16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0" Margin="0,0,0,8">
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Chip}" Content="✕" FontSize="12"
+                            ToolTip="Закрыть остров" Click="Exit_Click"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="TabHome" Style="{StaticResource Chip}" Content="Главная" Tag="Home" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabWeather" Style="{StaticResource Chip}" Content="☀" ToolTip="Погода" Tag="Weather" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabClip" Style="{StaticResource Chip}" Content="📋" ToolTip="Буфер обмена" Tag="Clip" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabShelf" Style="{StaticResource Chip}" Content="📥" ToolTip="Полка для файлов" Tag="Shelf" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabApps" Style="{StaticResource Chip}" Content="🚀" ToolTip="Мои сайты и программы" Tag="Apps" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabTools" Style="{StaticResource Chip}" Content="🛠" ToolTip="Инструменты" Tag="Tools" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabControlBtn" Style="{StaticResource Chip}" Content="🎛" ToolTip="Управление" Tag="Control" Click="Tab_Click" FontSize="12" Margin="0,0,4,0"/>
+                        <Button x:Name="TabSettings" Style="{StaticResource Chip}" Content="⚙" Tag="Settings" Click="Tab_Click" FontSize="12" ToolTip="Настройки"/>
+                    </StackPanel>
+                </DockPanel>
+
+                <Grid x:Name="HomeView" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Border x:Name="CoverBox" Width="56" Height="56" CornerRadius="10" Margin="0,0,12,0"
+                            Background="#26FFFFFF" Visibility="Collapsed">
+                        <Border.OpacityMask>
+                            <VisualBrush>
+                                <VisualBrush.Visual>
+                                    <Border Width="56" Height="56" CornerRadius="10" Background="Black"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Border.OpacityMask>
+                        <Image x:Name="Cover" Stretch="UniformToFill"/>
+                    </Border>
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock x:Name="TrackTitle" Foreground="White" FontSize="16" FontWeight="SemiBold"
+                               Text="Ничего не играет" TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="TrackArtist" Foreground="#99FFFFFF" FontSize="12"
+                               TextTrimming="CharacterEllipsis"/>
+                    <TextBlock x:Name="LyricText" Foreground="#FFE6E6E6" FontSize="12" Margin="0,2,0,0"
+                               TextTrimming="CharacterEllipsis" Visibility="Collapsed"/>
+                </StackPanel>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="0,10,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="PosText" Foreground="#99FFFFFF" FontSize="11" VerticalAlignment="Center"/>
+                    <Border x:Name="SeekHit" Grid.Column="1" Height="16" Background="Transparent" Margin="8,0" Cursor="Hand"
+                            MouseLeftButtonDown="Seek_Down">
+                        <Grid VerticalAlignment="Center" Height="4">
+                            <Border Background="#33FFFFFF" CornerRadius="2"/>
+                            <Border x:Name="SeekFill" Background="White" CornerRadius="2" HorizontalAlignment="Left" Width="0"/>
+                        </Grid>
+                    </Border>
+                    <TextBlock x:Name="DurText" Grid.Column="2" Foreground="#99FFFFFF" FontSize="11" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Grid Grid.Row="2" Margin="0,6,0,0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Style="{StaticResource Chip}" Content="⏮" Click="Prev_Click" Margin="4,0"/>
+                    <Button x:Name="PlayBtn" Style="{StaticResource Chip}" Content="⏯" Click="Play_Click" Margin="4,0"/>
+                    <Button Style="{StaticResource Chip}" Content="⏭" Click="Next_Click" Margin="4,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="🔊" Foreground="#99FFFFFF" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <Border x:Name="VolHit" Width="90" Height="16" Background="Transparent" Cursor="Hand"
+                            MouseLeftButtonDown="Vol_Down" MouseMove="Vol_Move" MouseLeftButtonUp="Vol_Up">
+                        <Grid VerticalAlignment="Center" Height="4">
+                            <Border Background="#33FFFFFF" CornerRadius="2"/>
+                            <Border x:Name="VolFill" Background="White" CornerRadius="2" HorizontalAlignment="Left" Width="0"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+                </Grid>
+
+                <UniformGrid Grid.Row="3" Rows="1" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="400">
+                    <Button Style="{StaticResource Chip}" Content="💬 Чат" Click="Chat_Click" Margin="3,0" Padding="4,6" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="⏱ Таймер" Click="Timer_Click" Margin="3,0" Padding="4,6" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="🍅 Фокус" ToolTip="Помодоро" Click="Pomodoro_Click" Margin="3,0" Padding="4,6" FontSize="12"/>
+                </UniformGrid>
+                </Grid>
+
+                <Grid x:Name="ClipView" Grid.Row="1" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="0,0,0,6">
+                        <TextBox x:Name="ClipSearch" Padding="10,5" FontSize="12" Background="#26FFFFFF" Foreground="White"
+                                 BorderThickness="0" CaretBrush="White" TextChanged="ClipSearch_TextChanged"
+                                 PreviewMouseLeftButtonDown="ClipSearch_PreviewMouseDown" GotKeyboardFocus="ClipSearch_GotFocus"
+                                 LostKeyboardFocus="ClipSearch_LostFocus" KeyDown="ClipSearch_KeyDown"/>
+                        <TextBlock x:Name="ClipSearchHint" Text="🔍 Поиск по буферу" Foreground="#80FFFFFF" FontSize="12"
+                                   Margin="12,0,0,0" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                    </Grid>
+                    <TextBlock x:Name="ClipEmpty" Grid.Row="1" Text="Здесь появится то, что ты скопируешь" Foreground="#99FFFFFF" FontSize="12"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel x:Name="ClipList"/>
+                    </ScrollViewer>
+                </Grid>
+
+                <UniformGrid x:Name="ToolsView" Grid.Row="1" Columns="3" Rows="4" Height="204" VerticalAlignment="Top" Visibility="Collapsed">
+                    <Button Style="{StaticResource Chip}" Content="✂ Область" Click="ToolArea_Click" Margin="4" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="🖥 Весь экран" Click="ToolScreen_Click" Margin="4" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="🔤 Текст с экрана" Click="ToolOcr_Click" Margin="4" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="🎨 Пипетка" Click="ToolPick_Click" Margin="4" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="📋 Чистый текст" Click="ToolPlain_Click" Margin="4" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="▦ QR из буфера" Click="ToolQr_Click" Margin="4" FontSize="12"/>
+                    <Button x:Name="RecBtn" Style="{StaticResource Chip}" Content="⏺ Запись экрана" Click="ToolRec_Click" Margin="4" FontSize="12"/>
+                    <Button x:Name="RecAudioBtn" Style="{StaticResource Chip}" Content="🔊 Звук ПК" Click="ToolRecAudio_Click" Margin="4" FontSize="12"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4" ToolTip="Сдвиг звука записи относительно видео: «+» — звук позже, «−» — раньше">
+                        <Button Style="{StaticResource Chip}" Content="−" Tag="-" Click="RecOffset_Click" FontSize="13" Padding="10,2"/>
+                        <TextBlock x:Name="RecOffsetLabel" Foreground="White" FontSize="12" VerticalAlignment="Center" TextAlignment="Center" MinWidth="78" Margin="6,0"/>
+                        <Button Style="{StaticResource Chip}" Content="+" Tag="+" Click="RecOffset_Click" FontSize="13" Padding="10,2"/>
+                    </StackPanel>
+                    <Button Style="{StaticResource Chip}" Content="🎙 Голос" ToolTip="Сказать команду или вопрос (Ctrl+Alt+V или «Привет, остров»)" Click="ToolVoice_Click" Margin="4" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="🧠 Спроси про экран" ToolTip="Выдели область — снимок уйдёт в чат с вопросом (Ctrl+Alt+Space)" Click="ToolAsk_Click" Margin="4" FontSize="12"/>
+                </UniformGrid>
+
+                <Grid x:Name="WeatherView" Grid.Row="1" Visibility="Collapsed">
+                    <TextBlock x:Name="WxMsg" Foreground="#99FFFFFF" FontSize="12" HorizontalAlignment="Center"
+                               VerticalAlignment="Center" Visibility="Collapsed"/>
+                    <Grid x:Name="WxBody">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,24,0">
+                                <TextBlock x:Name="WxTemp" Foreground="White" FontSize="38" FontWeight="SemiBold"/>
+                                <TextBlock x:Name="WxDesc" Foreground="#99FFFFFF" FontSize="12"/>
+                                <TextBlock x:Name="WxFeels" Foreground="#99FFFFFF" FontSize="12"/>
+                            </StackPanel>
+                            <UniformGrid Grid.Column="1" Rows="1" VerticalAlignment="Center">
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Ветер" Foreground="#99FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock x:Name="WxArrow" Text="↑" Foreground="White" FontSize="18" Margin="0,0,4,0"
+                                                   RenderTransformOrigin="0.5,0.5">
+                                            <TextBlock.RenderTransform>
+                                                <RotateTransform x:Name="WxRot"/>
+                                            </TextBlock.RenderTransform>
+                                        </TextBlock>
+                                        <TextBlock x:Name="WxWind" Foreground="White" FontSize="14" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Влажность" Foreground="#99FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="WxHum" Foreground="White" FontSize="14" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Center">
+                                    <TextBlock Text="Давление" Foreground="#99FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                    <TextBlock x:Name="WxPres" Foreground="White" FontSize="14" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </UniformGrid>
+                        </Grid>
+                        <UniformGrid x:Name="WxHours" Grid.Row="1" Rows="1" VerticalAlignment="Bottom" Margin="0,8,0,0"/>
+                    </Grid>
+                </Grid>
+
+                <Grid x:Name="ShelfView" Grid.Row="1" Visibility="Collapsed"/>
+
+                <Grid x:Name="ControlView" Grid.Row="1" Visibility="Collapsed"/>
+
+                <Grid x:Name="AppsView" Grid.Row="1" Visibility="Collapsed"/>
+
+                <ScrollViewer x:Name="SettingsView" Grid.Row="1" Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="0,0,6,0">
+                    <TextBlock Text="Цвет острова" Foreground="#99FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                    <StackPanel x:Name="Swatches" Orientation="Horizontal"/>
+                    <WrapPanel Margin="0,14,0,0">
+                        <Button x:Name="WeatherToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="WeatherToggle_Click"/>
+                        <Button x:Name="LiquidToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="LiquidToggle_Click"/>
+                        <Button x:Name="CharToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="CharToggle_Click"/>
+                        <Button x:Name="EqToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="EqToggle_Click"/>
+                        <Button x:Name="SmartToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="SmartToggle_Click"/>
+                    </WrapPanel>
+                    <Border Height="1" Background="#26FFFFFF" Margin="0,2,0,12"/>
+                    <WrapPanel>
+                        <Button x:Name="VoiceToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="VoiceToggle_Click"/>
+                        <Button x:Name="VoiceWakeToggle" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="VoiceWakeToggle_Click"/>
+                        <Button x:Name="WakeSensBtn" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="WakeSens_Click"/>
+                        <Button x:Name="WakeEngineBtn" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="WakeEngine_Click"/>
+                        <Button x:Name="VoiceReplyBtn" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="VoiceReplyBtn_Click"/>
+                        <Button x:Name="VoiceMicBtn" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="VoiceMic_Click"/>
+                    </WrapPanel>
+                    <Border Height="1" Background="#26FFFFFF" Margin="0,2,0,12"/>
+                    <WrapPanel>
+                        <Button x:Name="ClaudeHooksBtn" Style="{StaticResource Chip}" Content="🧩 Хуки Claude Code → в буфер" Margin="0,0,8,8" FontSize="12" Click="ClaudeHooks_Click"/>
+                        <Button x:Name="VpnImportBtn" Style="{StaticResource Chip}" Content="🛡 Импорт VPN (.conf)…" Margin="0,0,8,8" FontSize="12" Click="VpnImport_Click"/>
+                        <Button x:Name="KeySetupBtn" Style="{StaticResource Chip}" Content="🔑 Ключ для ИИ…" Margin="0,0,8,8" FontSize="12" Click="KeySetup_Click"/>
+                        <Button x:Name="UpdateBtn" Style="{StaticResource Chip}" Margin="0,0,8,8" FontSize="12" Click="UpdateBtn_Click"/>
+                    </WrapPanel>
+                    <TextBlock Text="Плитки в «Управлении»" Foreground="#99FFFFFF" FontSize="12" Margin="0,2,0,6"/>
+                    <WrapPanel x:Name="TilePicker" Margin="0,0,0,6"/>
+                    <TextBlock Text="Персонаж" Foreground="#99FFFFFF" FontSize="12" Margin="0,2,0,6"/>
+                    <ScrollViewer MaxHeight="72" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <WrapPanel x:Name="CharPicker"/>
+                    </ScrollViewer>
+                </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+            <Canvas x:Name="Eyes" Width="44" Height="26" HorizontalAlignment="Left" VerticalAlignment="Center"
+                    Margin="12,0,0,0" Opacity="0" IsHitTestVisible="False"/>
+
+            <TextBlock x:Name="IdleText" Foreground="White" FontSize="13" Opacity="0" IsHitTestVisible="False"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+            <Canvas x:Name="EqBars" Width="22" Height="18" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Margin="0,0,14,0" Opacity="0" IsHitTestVisible="False"/>
+
+            <!-- Умный буфер: кнопки действий над скопированным текстом -->
+            <Grid x:Name="ClipActPanel" Opacity="0" IsHitTestVisible="False" Margin="14,8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="ClipActText" Foreground="#CCFFFFFF" FontSize="12" TextTrimming="CharacterEllipsis"
+                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                <UniformGrid Grid.Row="1" Rows="1" Margin="0,6,0,0">
+                    <Button Style="{StaticResource Chip}" Content="💡 Объяснить" Tag="explain"   Click="SmartAct_Click" Margin="2,0" Padding="4,5" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="🌐 Перевести" Tag="translate" Click="SmartAct_Click" Margin="2,0" Padding="4,5" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="✍ Исправить"  Tag="fix"       Click="SmartAct_Click" Margin="2,0" Padding="4,5" FontSize="12"/>
+                    <Button Style="{StaticResource Chip}" Content="✂ Коротко"    Tag="short"     Click="SmartAct_Click" Margin="2,0" Padding="4,5" FontSize="12"/>
+                </UniformGrid>
+            </Grid>
+
+            <!-- Умный буфер: ответ ИИ -->
+            <Grid x:Name="AnswerPanel" Opacity="0" IsHitTestVisible="False" Margin="16,12,16,14">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <DockPanel Grid.Row="0" Margin="0,0,0,6">
+                    <Button DockPanel.Dock="Right" Style="{StaticResource Chip}" Content="✕" Padding="8,2" Click="AnswerClose_Click"/>
+                    <TextBlock x:Name="AnswerTitle" Foreground="White" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                </DockPanel>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <TextBox x:Name="AnswerText" IsReadOnly="True" Background="Transparent" BorderThickness="0"
+                             Foreground="White" TextWrapping="Wrap" FontSize="13"/>
+                </ScrollViewer>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                    <Button x:Name="AnswerCopyBtn" Style="{StaticResource Chip}" Content="📋 Копировать" Click="AnswerCopy_Click" Margin="0,0,6,0" FontSize="12"/>
+                    <Button x:Name="AnswerChatBtn" Style="{StaticResource Chip}" Content="💬 В чат" Click="AnswerToChat_Click" FontSize="12"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="AlarmPanel" Opacity="0" IsHitTestVisible="False" Margin="18,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="⏰ Время вышло" Foreground="White" FontSize="16" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="AlarmSub" Foreground="#99FFFFFF" FontSize="12"/>
+                </StackPanel>
+                <Button Grid.Column="1" Style="{StaticResource Chip}" Content="Ещё раз" Click="AlarmAgain_Click" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                <Button Grid.Column="2" Style="{StaticResource Chip}" Content="✓" Click="AlarmDone_Click" VerticalAlignment="Center"/>
+            </Grid>
+
+            <local:TimerPanel x:Name="TimerView" Opacity="0" IsHitTestVisible="False" CloseRequested="Timer_Close"/>
+
+            <local:PomodoroPanel x:Name="PomoView" Opacity="0" IsHitTestVisible="False" CloseRequested="Pomo_Close"/>
+
+            <local:ChatPanel x:Name="Chat" Opacity="0" IsHitTestVisible="False" CloseRequested="Chat_Close"/>
+        </Grid>
+    </Border>
+    </Grid>
+</Window>

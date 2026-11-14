@@ -1,0 +1,36 @@
+<UserControl x:Class="Island.PomodoroPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+            <Button DockPanel.Dock="Right" Style="{StaticResource Chip}" Content="✕" Padding="8,2" Click="Close_Click"/>
+            <TextBlock x:Name="PhaseText" Text="🍅 Помодоро" Foreground="White" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+        </DockPanel>
+
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock x:Name="TimeText" Text="25:00" FontSize="42" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Center"/>
+            <StackPanel x:Name="Dots" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2">
+            <StackPanel x:Name="SetupRow" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button x:Name="P25" Style="{StaticResource Chip}" Content="25 / 5"  Tag="25,5"  Click="Preset_Click" Margin="3,0"/>
+                <Button x:Name="P50" Style="{StaticResource Chip}" Content="50 / 10" Tag="50,10" Click="Preset_Click" Margin="3,0"/>
+                <Button x:Name="P15" Style="{StaticResource Chip}" Content="15 / 3"  Tag="15,3"  Click="Preset_Click" Margin="3,0"/>
+                <Button Style="{StaticResource Chip}" Content="▶ Старт" Click="Start_Click" Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <StackPanel x:Name="RunRow" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
+                <Button x:Name="PauseBtn" Style="{StaticResource Chip}" Content="⏸ Пауза" Click="Pause_Click" Margin="4,0"/>
+                <Button Style="{StaticResource Chip}" Content="⏭ Дальше" ToolTip="Пропустить текущую фазу" Click="Skip_Click" Margin="4,0"/>
+                <Button Style="{StaticResource Chip}" Content="⏹ Стоп" Click="Stop_Click" Margin="4,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
